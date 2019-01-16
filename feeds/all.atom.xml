@@ -1148,14 +1148,35 @@ h6:hover .anchor-link {
 
 .ansi-bold { font-weight: bold; }
 &lt;/style&gt;
+&lt;div class="cell border-box-sizing text_cell rendered"&gt;&lt;div class="prompt input_prompt"&gt;
+&lt;/div&gt;&lt;div class="inner_cell"&gt;
+&lt;div class="text_cell_render border-box-sizing rendered_html"&gt;
+&lt;h1 id="Introdu&amp;#231;&amp;#227;o"&gt;Introdu&amp;#231;&amp;#227;o&lt;a class="anchor-link" href="#Introdu&amp;#231;&amp;#227;o"&gt;&amp;#182;&lt;/a&gt;&lt;/h1&gt;&lt;p&gt;Atualmente quando falamos em análise de sentimentos através de textos, a primeira coisa que nos vêm a cabeça é o uso de técnicas como RNNs, LSTMs, NGram ConvNets e outras siglas bem bonitas. Porém, em alguns casos (ou na maioria deles), esse tipo de abordagem é um overkill para a situação, muitas vezes trazendo mais problemas do que soluções e uma carga técnica muito grande para projetos não tão grandes e não tão complexos.&lt;/p&gt;
+&lt;center&gt;&lt;img src='img/dl.jpg'&gt;&lt;/center&gt;
+&lt;/div&gt;
+&lt;/div&gt;
+&lt;/div&gt;
+&lt;div class="cell border-box-sizing text_cell rendered"&gt;&lt;div class="prompt input_prompt"&gt;
+&lt;/div&gt;&lt;div class="inner_cell"&gt;
+&lt;div class="text_cell_render border-box-sizing rendered_html"&gt;
+&lt;p&gt;Então, por este motivo, a ideia deste post é trazer uma abordagem um pouco diferente das que você, caro leitor, está acostumado a ler nos últimos anos. Neste post vamos trabalhar com machine learning clássico (acredite ou não, ainda muito útil) para análise de sentimentos em uma base de dados de tweets coletados. Em seguida, vamos utilizar o docker para servir nossa API da maneira mais próxima a de um projeto real possível.
+De forma resumida, neste artigo, vamos abordar:&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;NLP para análise de sentimentos;&lt;/li&gt;
+&lt;li&gt;Desenvolvimento de pipelines e grid search utilizando Scikit-Learn;&lt;/li&gt;
+&lt;li&gt;Deploy do modelo com REST API e Docker.&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;/div&gt;
+&lt;/div&gt;
+&lt;/div&gt;
 &lt;div class="cell border-box-sizing code_cell rendered"&gt;
 &lt;div class="input"&gt;
-&lt;div class="prompt input_prompt"&gt;In&amp;nbsp;[1]:&lt;/div&gt;
+&lt;div class="prompt input_prompt"&gt;In&amp;nbsp;[5]:&lt;/div&gt;
 &lt;div class="inner_cell"&gt;
     &lt;div class="input_area"&gt;
 &lt;div class=" highlight hl-ipython3"&gt;&lt;pre&gt;&lt;span&gt;&lt;/span&gt;&lt;span class="kn"&gt;import&lt;/span&gt; &lt;span class="nn"&gt;pandas&lt;/span&gt; &lt;span class="k"&gt;as&lt;/span&gt; &lt;span class="nn"&gt;pd&lt;/span&gt;
 &lt;span class="kn"&gt;from&lt;/span&gt; &lt;span class="nn"&gt;nltk.corpus&lt;/span&gt; &lt;span class="k"&gt;import&lt;/span&gt; &lt;span class="n"&gt;stopwords&lt;/span&gt;
-&lt;span class="kn"&gt;from&lt;/span&gt; &lt;span class="nn"&gt;keras.preprocessing.text&lt;/span&gt; &lt;span class="k"&gt;import&lt;/span&gt; &lt;span class="n"&gt;Tokenizer&lt;/span&gt;
 &lt;span class="kn"&gt;import&lt;/span&gt; &lt;span class="nn"&gt;re&lt;/span&gt;
 &lt;span class="kn"&gt;import&lt;/span&gt; &lt;span class="nn"&gt;string&lt;/span&gt;
 &lt;span class="kn"&gt;from&lt;/span&gt; &lt;span class="nn"&gt;sklearn.pipeline&lt;/span&gt; &lt;span class="k"&gt;import&lt;/span&gt; &lt;span class="n"&gt;Pipeline&lt;/span&gt;
@@ -1163,7 +1184,7 @@ h6:hover .anchor-link {
 &lt;span class="kn"&gt;from&lt;/span&gt; &lt;span class="nn"&gt;sklearn.feature_extraction.text&lt;/span&gt; &lt;span class="k"&gt;import&lt;/span&gt; &lt;span class="n"&gt;CountVectorizer&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="n"&gt;TfidfTransformer&lt;/span&gt;
 &lt;span class="kn"&gt;from&lt;/span&gt; &lt;span class="nn"&gt;sklearn.preprocessing&lt;/span&gt; &lt;span class="k"&gt;import&lt;/span&gt; &lt;span class="n"&gt;LabelEncoder&lt;/span&gt;
 &lt;span class="kn"&gt;from&lt;/span&gt; &lt;span class="nn"&gt;sklearn.model_selection&lt;/span&gt; &lt;span class="k"&gt;import&lt;/span&gt; &lt;span class="n"&gt;train_test_split&lt;/span&gt;
-&lt;span class="kn"&gt;from&lt;/span&gt; &lt;span class="nn"&gt;sklearn.grid_search&lt;/span&gt; &lt;span class="k"&gt;import&lt;/span&gt; &lt;span class="n"&gt;GridSearchCV&lt;/span&gt;
+&lt;span class="kn"&gt;from&lt;/span&gt; &lt;span class="nn"&gt;sklearn.model_selection&lt;/span&gt; &lt;span class="k"&gt;import&lt;/span&gt; &lt;span class="n"&gt;GridSearchCV&lt;/span&gt;
 &lt;span class="kn"&gt;from&lt;/span&gt; &lt;span class="nn"&gt;sklearn.metrics&lt;/span&gt; &lt;span class="k"&gt;import&lt;/span&gt; &lt;span class="n"&gt;classification_report&lt;/span&gt;
 &lt;span class="kn"&gt;from&lt;/span&gt; &lt;span class="nn"&gt;sklearn.metrics&lt;/span&gt; &lt;span class="k"&gt;import&lt;/span&gt; &lt;span class="n"&gt;confusion_matrix&lt;/span&gt;
 &lt;span class="kn"&gt;from&lt;/span&gt; &lt;span class="nn"&gt;sklearn.externals&lt;/span&gt; &lt;span class="k"&gt;import&lt;/span&gt; &lt;span class="n"&gt;joblib&lt;/span&gt;
@@ -1174,41 +1195,14 @@ h6:hover .anchor-link {
 &lt;/div&gt;
 &lt;/div&gt;
 
-&lt;div class="output_wrapper"&gt;
-&lt;div class="output"&gt;
-
-
-&lt;div class="output_area"&gt;
-
-    &lt;div class="prompt"&gt;&lt;/div&gt;
-
-
-&lt;div class="output_subarea output_text output_error"&gt;
-&lt;pre&gt;
-&lt;span class="ansi-red-fg"&gt;---------------------------------------------------------------------------&lt;/span&gt;
-&lt;span class="ansi-red-fg"&gt;ModuleNotFoundError&lt;/span&gt;                       Traceback (most recent call last)
-&lt;span class="ansi-green-fg"&gt;&amp;lt;ipython-input-1-8acf326a89ca&amp;gt;&lt;/span&gt; in &lt;span class="ansi-cyan-fg"&gt;&amp;lt;module&amp;gt;&lt;/span&gt;
-&lt;span class="ansi-green-fg"&gt;----&amp;gt; 1&lt;/span&gt;&lt;span class="ansi-red-fg"&gt; &lt;/span&gt;&lt;span class="ansi-green-fg"&gt;import&lt;/span&gt; pandas &lt;span class="ansi-green-fg"&gt;as&lt;/span&gt; pd
-&lt;span class="ansi-green-intense-fg ansi-bold"&gt;      2&lt;/span&gt; &lt;span class="ansi-green-fg"&gt;from&lt;/span&gt; nltk&lt;span class="ansi-blue-fg"&gt;.&lt;/span&gt;corpus &lt;span class="ansi-green-fg"&gt;import&lt;/span&gt; stopwords
-&lt;span class="ansi-green-intense-fg ansi-bold"&gt;      3&lt;/span&gt; &lt;span class="ansi-green-fg"&gt;from&lt;/span&gt; keras&lt;span class="ansi-blue-fg"&gt;.&lt;/span&gt;preprocessing&lt;span class="ansi-blue-fg"&gt;.&lt;/span&gt;text &lt;span class="ansi-green-fg"&gt;import&lt;/span&gt; Tokenizer
-&lt;span class="ansi-green-intense-fg ansi-bold"&gt;      4&lt;/span&gt; &lt;span class="ansi-green-fg"&gt;import&lt;/span&gt; re
-&lt;span class="ansi-green-intense-fg ansi-bold"&gt;      5&lt;/span&gt; &lt;span class="ansi-green-fg"&gt;import&lt;/span&gt; string
-
-&lt;span class="ansi-red-fg"&gt;ModuleNotFoundError&lt;/span&gt;: No module named &amp;#39;pandas&amp;#39;&lt;/pre&gt;
-&lt;/div&gt;
-&lt;/div&gt;
-
-&lt;/div&gt;
-&lt;/div&gt;
-
 &lt;/div&gt;
 &lt;div class="cell border-box-sizing code_cell rendered"&gt;
 &lt;div class="input"&gt;
-&lt;div class="prompt input_prompt"&gt;In&amp;nbsp;[2]:&lt;/div&gt;
+&lt;div class="prompt input_prompt"&gt;In&amp;nbsp;[6]:&lt;/div&gt;
 &lt;div class="inner_cell"&gt;
     &lt;div class="input_area"&gt;
 &lt;div class=" highlight hl-ipython3"&gt;&lt;pre&gt;&lt;span&gt;&lt;/span&gt;&lt;span class="c1"&gt;#Lê os dados do disco&lt;/span&gt;
-&lt;span class="n"&gt;data&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="n"&gt;pd&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;read_csv&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="s1"&gt;&amp;#39;./dataset_twitter.csv&amp;#39;&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="n"&gt;encoding&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="s1"&gt;&amp;#39;utf-8&amp;#39;&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="n"&gt;sep&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="s1"&gt;&amp;#39;,&amp;#39;&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;
+&lt;span class="n"&gt;data&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="n"&gt;pd&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;read_csv&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="s1"&gt;&amp;#39;/home/joao/Projetos/martinsblog/datasets/dataset_twitter.csv&amp;#39;&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="n"&gt;encoding&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="s1"&gt;&amp;#39;utf-8&amp;#39;&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="n"&gt;sep&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="s1"&gt;&amp;#39;,&amp;#39;&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;
 
 &lt;span class="c1"&gt;#Tira as linhas com NaN&lt;/span&gt;
 &lt;span class="n"&gt;data&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="n"&gt;data&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;dropna&lt;/span&gt;&lt;span class="p"&gt;()&lt;/span&gt; 
@@ -1226,22 +1220,18 @@ h6:hover .anchor-link {
 
 &lt;div class="output_area"&gt;
 
-    &lt;div class="prompt"&gt;&lt;/div&gt;
+    &lt;div class="prompt output_prompt"&gt;Out[6]:&lt;/div&gt;
 
 
-&lt;div class="output_subarea output_text output_error"&gt;
-&lt;pre&gt;
-&lt;span class="ansi-red-fg"&gt;---------------------------------------------------------------------------&lt;/span&gt;
-&lt;span class="ansi-red-fg"&gt;NameError&lt;/span&gt;                                 Traceback (most recent call last)
-&lt;span class="ansi-green-fg"&gt;&amp;lt;ipython-input-2-251421749447&amp;gt;&lt;/span&gt; in &lt;span class="ansi-cyan-fg"&gt;&amp;lt;module&amp;gt;&lt;/span&gt;
-&lt;span class="ansi-green-intense-fg ansi-bold"&gt;      1&lt;/span&gt; &lt;span class="ansi-red-fg"&gt;#Lê os dados do disco&lt;/span&gt;
-&lt;span class="ansi-green-fg"&gt;----&amp;gt; 2&lt;/span&gt;&lt;span class="ansi-red-fg"&gt; &lt;/span&gt;data &lt;span class="ansi-blue-fg"&gt;=&lt;/span&gt; pd&lt;span class="ansi-blue-fg"&gt;.&lt;/span&gt;read_csv&lt;span class="ansi-blue-fg"&gt;(&lt;/span&gt;&lt;span class="ansi-blue-fg"&gt;&amp;#39;./dataset_twitter.csv&amp;#39;&lt;/span&gt;&lt;span class="ansi-blue-fg"&gt;,&lt;/span&gt; encoding&lt;span class="ansi-blue-fg"&gt;=&lt;/span&gt;&lt;span class="ansi-blue-fg"&gt;&amp;#39;utf-8&amp;#39;&lt;/span&gt;&lt;span class="ansi-blue-fg"&gt;,&lt;/span&gt; sep&lt;span class="ansi-blue-fg"&gt;=&lt;/span&gt;&lt;span class="ansi-blue-fg"&gt;&amp;#39;,&amp;#39;&lt;/span&gt;&lt;span class="ansi-blue-fg"&gt;)&lt;/span&gt;
-&lt;span class="ansi-green-intense-fg ansi-bold"&gt;      3&lt;/span&gt; 
-&lt;span class="ansi-green-intense-fg ansi-bold"&gt;      4&lt;/span&gt; &lt;span class="ansi-red-fg"&gt;#Tira as linhas com NaN&lt;/span&gt;
-&lt;span class="ansi-green-intense-fg ansi-bold"&gt;      5&lt;/span&gt; data &lt;span class="ansi-blue-fg"&gt;=&lt;/span&gt; data&lt;span class="ansi-blue-fg"&gt;.&lt;/span&gt;dropna&lt;span class="ansi-blue-fg"&gt;(&lt;/span&gt;&lt;span class="ansi-blue-fg"&gt;)&lt;/span&gt;
 
-&lt;span class="ansi-red-fg"&gt;NameError&lt;/span&gt;: name &amp;#39;pd&amp;#39; is not defined&lt;/pre&gt;
+
+&lt;div class="output_text output_subarea output_execute_result"&gt;
+&lt;pre&gt;Unnamed: 0       10658
+Text             10658
+Classificacao    10658
+dtype: int64&lt;/pre&gt;
 &lt;/div&gt;
+
 &lt;/div&gt;
 
 &lt;/div&gt;
