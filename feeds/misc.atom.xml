@@ -1151,8 +1151,10 @@ h6:hover .anchor-link {
 &lt;div class="cell border-box-sizing text_cell rendered"&gt;&lt;div class="prompt input_prompt"&gt;
 &lt;/div&gt;&lt;div class="inner_cell"&gt;
 &lt;div class="text_cell_render border-box-sizing rendered_html"&gt;
-&lt;h1 id="Introdu&amp;#231;&amp;#227;o---TESTE2"&gt;Introdu&amp;#231;&amp;#227;o - TESTE2&lt;a class="anchor-link" href="#Introdu&amp;#231;&amp;#227;o---TESTE2"&gt;&amp;#182;&lt;/a&gt;&lt;/h1&gt;&lt;p&gt;Atualmente quando falamos em análise de sentimentos através de textos, a primeira coisa que nos vêm a cabeça é o uso de técnicas como RNNs, LSTMs, NGram ConvNets e outras siglas bem bonitas. Porém, em alguns casos (ou na maioria deles), esse tipo de abordagem é um overkill para a situação, muitas vezes trazendo mais problemas do que soluções e uma carga técnica muito grande para projetos não tão grandes e não tão complexos.&lt;/p&gt;
-&lt;center&gt;&lt;img src=img/dl.jpg/&gt;&lt;/center&gt;
+&lt;h1 id="Introdu&amp;#231;&amp;#227;o---TESTE5"&gt;Introdu&amp;#231;&amp;#227;o - TESTE5&lt;a class="anchor-link" href="#Introdu&amp;#231;&amp;#227;o---TESTE5"&gt;&amp;#182;&lt;/a&gt;&lt;/h1&gt;&lt;p&gt;Atualmente quando falamos em análise de sentimentos através de textos, a primeira coisa que nos vêm a cabeça é o uso de técnicas como RNNs, LSTMs, NGram ConvNets e outras siglas bem bonitas. Porém, em alguns casos (ou na maioria deles), esse tipo de abordagem é um overkill para a situação, muitas vezes trazendo mais problemas do que soluções e uma carga técnica muito grande para projetos não tão grandes e não tão complexos.&lt;/p&gt;
+&lt;center&gt;
+    &lt;img src="/theme/img/dl.jpg"&gt;
+&lt;/center&gt;
 &lt;/div&gt;
 &lt;/div&gt;
 &lt;/div&gt;
